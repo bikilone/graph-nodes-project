@@ -10,6 +10,7 @@ import { GraphNode } from "./graph-node.model";
 })
 export class GraphNodePage implements OnInit {
   selectedNode: GraphNode;
+  childrenNodes: GraphNode[];
   constructor(
     private graphNodesService: GraphNodesService,
     private route: ActivatedRoute
@@ -17,12 +18,13 @@ export class GraphNodePage implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.subscribe(paramMap => {
-      // console.log(paramMap.get("id"));
       if (!paramMap.has("id")) {
         return;
       }
       this.selectedNode = this.graphNodesService.getNode(paramMap.get("id"))[0];
-      console.log(this.selectedNode);
+      this.childrenNodes = this.graphNodesService.findChildren(
+        paramMap.get("id")
+      );
     });
   }
 }

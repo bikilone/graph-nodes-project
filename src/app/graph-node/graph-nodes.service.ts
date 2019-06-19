@@ -21,4 +21,12 @@ export class GraphNodesService {
   getNode(id: string) {
     return this.graphNodes.filter(node => node.objectId === id);
   }
+  findChildren(id: string) {
+    return this.graphNodes.filter(node => {
+      if (!node.parentObjects) {
+        return;
+      }
+      return node.parentObjects.includes(id);
+    });
+  }
 }

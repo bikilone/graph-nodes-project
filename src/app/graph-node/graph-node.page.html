@@ -5,5 +5,13 @@
 </ion-header>
 
 <ion-content>
-
+  <ion-grid>
+    <ion-row *ngFor="let node of childrenNodes">
+      <ion-col size-sm="6" offset-sm="3">
+        <ion-button [routerLink]="['/', 'graph', node.objectId]">{{
+          node.objectId
+        }}</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 </ion-content>
