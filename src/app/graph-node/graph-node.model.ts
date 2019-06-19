@@ -14,7 +14,7 @@ export class GraphNode {
   public objectId: string;
   public parentObjects: string[];
 
-  explicitRolesAssignment: {}[];
+  explicitRolesAssignment;
   constructor(
     objectId: string,
     parentObjects: string[],

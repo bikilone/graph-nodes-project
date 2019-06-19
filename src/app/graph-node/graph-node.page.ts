@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { GraphNodesService } from "./graph-nodes.service";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { GraphNode } from "./graph-node.model";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 
@@ -15,7 +15,8 @@ export class GraphNodePage implements OnInit {
   form: FormGroup;
   constructor(
     private graphNodesService: GraphNodesService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -23,49 +24,70 @@ export class GraphNodePage implements OnInit {
       if (!paramMap.has("id")) {
         return;
       }
-      this.selectedNode = this.graphNodesService.getNode(paramMap.get("id"))[0];
-      console.log(this.selectedNode);
+      this.selectedNode = this.graphNodesService.getNode(paramMap.get("id"));
 
-      const objectId = this.selectedNode.objectId;
-      const parentObjects = this.selectedNode.parentObjects
-        ? this.selectedNode.parentObjects
-        : "root";
-      const userId = this.selectedNode.explicitRolesAssignment
-        ? this.selectedNode.explicitRolesAssignment[0].userId
-        : "";
+      // if no page redirecting to the first element in the array
+      if (typeof this.selectedNode === "undefined") {
+        const id = this.graphNodesService.getAllNodes()[0].objectId;
+        this.router.navigateByUrl("/graph/" + id);
+      } else {
+        // extracting data for form
+        let objectId = this.selectedNode.objectId;
+        let parentObjects = this.selectedNode.parentObjects
+          ? this.selectedNode.parentObjects
+          : "root";
 
-      const groupId = this.selectedNode.explicitRolesAssignment
-        ? this.selectedNode.explicitRolesAssignment[0].groupId
-        : "";
-      const roles = this.selectedNode.explicitRolesAssignment
-        ? this.selectedNode.explicitRolesAssignment[0].roles
-        : [""];
-      console.log(objectId, parentObjects, userId, groupId, roles);
+        let userId = this.selectedNode.explicitRolesAssignment
+          ? this.selectedNode.explicitRolesAssignment[0].userId
+          : "";
 
-      this.childrenNodes = this.graphNodesService.findChildren(
-        paramMap.get("id")
-      );
-      this.form = new FormGroup({
-        objectId: new FormControl(objectId, {
-          updateOn: "blur",
-          validators: [Validators.required]
-        }),
-        parentObjects: new FormControl(null, {
-          updateOn: "blur",
-          validators: [Validators.required]
-        }),
-        userId: new FormControl(null, {
-          updateOn: "blur"
-        }),
-        groupId: new FormControl(null, {
-          updateOn: "blur"
-        }),
-        roles: new FormControl(null, {
-          updateOn: "blur"
-        })
-      });
+        let groupId = this.selectedNode.explicitRolesAssignment
+          ? this.selectedNode.explicitRolesAssignment[0].groupId
+          : "";
+        let roles = this.selectedNode.explicitRolesAssignment
+          ? this.selectedNode.explicitRolesAssignment[0].roles[0]
+          : "";
+        // getting all of the children
+        this.childrenNodes = this.graphNodesService.findChildren(
+          paramMap.get("id")
+        );
+
+        this.form = new FormGroup({
+          objectId: new FormControl(objectId, {
+            updateOn: "blur",
+            validators: [Validators.required]
+          }),
+          parentObjects: new FormControl(parentObjects, {
+            updateOn: "blur",
+            validators: [Validators.required]
+          }),
+          userId: new FormControl(userId, {
+            updateOn: "blur",
+            validators: [Validators.required]
+          }),
+          groupId: new FormControl(groupId, {
+            updateOn: "blur"
+          }),
+          roles: new FormControl(roles, {
+            updateOn: "blur",
+            validators: [Validators.required]
+          })
+        });
+      }
     });
   }
 
-  onSubmit() {}
+  onSubmit() {
+    if (!this.form.valid) {
+      return;
+    }
+    const data = {
+      objectId: this.form.value.objectId,
+      userId: this.form.value.userId,
+      roles: [this.form.value.roles],
+      groupId: this.form.value.groupId
+    };
+    this.graphNodesService.updateNode(this.selectedNode.objectId, data);
+    this.router.navigate(["../" + data.objectId], { relativeTo: this.route });
+  }
 }

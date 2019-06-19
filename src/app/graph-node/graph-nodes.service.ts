@@ -19,7 +19,7 @@ export class GraphNodesService {
   }
 
   getNode(id: string) {
-    return this.graphNodes.filter(node => node.objectId === id);
+    return this.graphNodes.filter(node => node.objectId === id)[0];
   }
   findChildren(id: string) {
     return this.graphNodes.filter(node => {
@@ -28,5 +28,31 @@ export class GraphNodesService {
       }
       return node.parentObjects.includes(id);
     });
+  }
+
+  findAllParents(id: string) {
+    const parents = [];
+    function findParent(node: GraphNode) {
+      if (node.parentObjects) {
+        parents.push(node.parentObjects);
+        findParent(this.getNode(node.parentObjects[0]));
+      } else {
+        return parents;
+      }
+    }
+    // findParent(this.getNode(id));
+  }
+
+  updateNode(
+    id: string,
+    data: { objectId: string; userId: string; roles: string[]; groupId: string }
+  ) {
+    const { objectId, userId, roles, groupId } = data;
+
+    const node = this.getNode(id);
+    node.objectId = objectId;
+    node.explicitRolesAssignment[0].userId = userId;
+    node.explicitRolesAssignment[0].groupId = groupId;
+    node.explicitRolesAssignment[0].roles = roles;
   }
 }
