@@ -9,6 +9,33 @@
 
 <ion-content>
   <ion-grid>
+    <form [formGroup]="form">
+      <ion-list>
+        <ion-item>
+          <ion-label>Parent Objects</ion-label>
+          <ion-input formControlName="parentObjects"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>User id</ion-label>
+          <ion-input formControlName="userId"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>Group id</ion-label>
+          <ion-input formControlName="groupId"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>Roles</ion-label>
+          <ion-input formControlName="roles"></ion-input>
+        </ion-item>
+      </ion-list>
+      <ion-button type="submit">Submit</ion-button>
+    </form>
+
+    <ion-row>
+      <ion-label>Children Nodes :</ion-label>
+    </ion-row>
     <ion-row *ngFor="let node of childrenNodes">
       <ion-col size-sm="6" offset-sm="3">
         <ion-button [routerLink]="['/', 'graph', node.objectId]">{{
