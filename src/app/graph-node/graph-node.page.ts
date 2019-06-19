@@ -1,5 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { GraphNodesService } from "./graph-nodes.service";
+import { ActivatedRoute } from "@angular/router";
+import { GraphNode } from "./graph-node.model";
 
 @Component({
   selector: "app-graph-node",
@@ -7,9 +9,20 @@ import { GraphNodesService } from "./graph-nodes.service";
   styleUrls: ["./graph-node.page.scss"]
 })
 export class GraphNodePage implements OnInit {
-  constructor(private graphNodesService: GraphNodesService) {}
+  selectedNode: GraphNode;
+  constructor(
+    private graphNodesService: GraphNodesService,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit() {
-    console.log(this.graphNodesService.getAllNodes());
+    this.route.paramMap.subscribe(paramMap => {
+      // console.log(paramMap.get("id"));
+      if (!paramMap.has("id")) {
+        return;
+      }
+      this.selectedNode = this.graphNodesService.getNode(paramMap.get("id"))[0];
+      console.log(this.selectedNode);
+    });
   }
 }

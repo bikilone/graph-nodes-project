@@ -17,4 +17,8 @@ export class GraphNodesService {
   getAllNodes() {
     return this.graphNodes;
   }
+
+  getNode(id: string) {
+    return this.graphNodes.filter(node => node.objectId === id);
+  }
 }
