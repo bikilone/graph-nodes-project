@@ -16,7 +16,7 @@ export class GraphNodePage implements OnInit {
     private route: ActivatedRoute
   ) {}
 
-  ngOnInit() {
+  ionViewWillEnter() {
     this.route.paramMap.subscribe(paramMap => {
       if (!paramMap.has("id")) {
         return;
