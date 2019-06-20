@@ -15,6 +15,7 @@ export class GraphNodePage implements OnInit {
   childrenNodes: GraphNode[];
   form: FormGroup;
   forbiddenIds: string[];
+  possibleParents: string[];
 
   constructor(
     private graphNodesService: GraphNodesService,
@@ -28,7 +29,13 @@ export class GraphNodePage implements OnInit {
         return;
       }
       this.selectedNode = this.graphNodesService.getNode(paramMap.get("id"));
+      /// getting all forbidden ids
       this.forbiddenIds = this.graphNodesService.getAllIds(
+        this.selectedNode.objectId
+      );
+
+      // this.graphNodesService.allPossibleParents(this.selectedNode.objectId);
+      this.possibleParents = this.graphNodesService.allPossibleParents(
         this.selectedNode.objectId
       );
 
@@ -37,11 +44,13 @@ export class GraphNodePage implements OnInit {
         const id = this.graphNodesService.getAllNodes()[0].objectId;
         this.router.navigateByUrl("/graph/" + id);
       } else {
+        // getting all possible parents
+
         // extracting data for form
         let objectId = this.selectedNode.objectId;
         let parentObjects = this.selectedNode.parentObjects
-          ? this.selectedNode.parentObjects
-          : "root";
+          ? this.selectedNode.parentObjects[0]
+          : "";
 
         let userId = this.selectedNode.explicitRolesAssignment
           ? this.selectedNode.explicitRolesAssignment[0].userId
@@ -67,8 +76,7 @@ export class GraphNodePage implements OnInit {
             ]
           }),
           parentObjects: new FormControl(parentObjects, {
-            updateOn: "blur",
-            validators: [Validators.required]
+            updateOn: "blur"
           }),
           userId: new FormControl(userId, {
             updateOn: "blur",
@@ -90,12 +98,15 @@ export class GraphNodePage implements OnInit {
     if (!this.form.valid) {
       return;
     }
+
     const data = {
       objectId: this.form.value.objectId,
+      parentObjects: [this.form.value.parentObjects],
       userId: this.form.value.userId,
       roles: [this.form.value.roles],
       groupId: this.form.value.groupId
     };
+
     this.graphNodesService.updateNode(this.selectedNode.objectId, data);
     this.router.navigate(["../" + data.objectId], { relativeTo: this.route });
   }

@@ -50,21 +50,55 @@ export class GraphNodesService {
         return parents;
       }
     }
-    // findParent(this.getNode(id));
+  }
+
+  allPossibleParents(id: string) {
+    const node = this.getNode(id);
+    let parents = [];
+    let forbiddenParents = [];
+    const children = this.findChildren(id);
+    const childrenIds = children.map(kid => kid.objectId);
+    const posssibleParents = this.getAllIds(id);
+    let filteredParents;
+    if (node.parentObjects === null) {
+      // root element
+      filteredParents = [];
+      return filteredParents;
+    }
+    // if there is no children
+    if (children.length === 0) {
+      filteredParents = posssibleParents;
+      return filteredParents;
+    }
+    // exclude all of the children
+
+    filteredParents = posssibleParents.filter(
+      parent => !childrenIds.includes(parent)
+    );
+    return filteredParents;
   }
 
   updateNode(
     id: string,
-    data: { objectId: string; userId: string; roles: string[]; groupId: string }
+    data: {
+      objectId: string;
+      parentObjects;
+      userId: string;
+      roles: string[];
+      groupId: string;
+    }
   ) {
-    const { objectId, userId, roles, groupId } = data;
+    const { objectId, parentObjects, userId, roles, groupId } = data;
+
     // find all children and keeping the connection between parent and child
     this.findChildren(id).forEach(node => {
       node.parentObjects[0] = objectId;
     });
 
     const node = this.getNode(id);
+
     node.objectId = objectId;
+    node.parentObjects = parentObjects;
     node.explicitRolesAssignment[0].userId = userId;
     node.explicitRolesAssignment[0].groupId = groupId;
     node.explicitRolesAssignment[0].roles = roles;
