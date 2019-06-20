@@ -2,14 +2,15 @@
   "name": "graph-nodes-project",
   "version": "0.0.1",
   "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "homepage": "https://bikilone.github.io//graph-nodes-project/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "deploy": "gh-pages -d www"
   },
   "private": true,
   "dependencies": {
