@@ -101,7 +101,11 @@ export class GraphNodePage implements OnInit {
 
     const data = {
       objectId: this.form.value.objectId,
-      parentObjects: [this.form.value.parentObjects],
+      parentObjects:
+        this.form.value.parentObjects === "" ||
+        this.form.value.parentObjects === undefined
+          ? null
+          : [this.form.value.parentObjects],
       userId: this.form.value.userId,
       roles: [this.form.value.roles],
       groupId: this.form.value.groupId
