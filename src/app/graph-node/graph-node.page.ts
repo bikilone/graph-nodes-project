@@ -3,6 +3,7 @@ import { GraphNodesService } from "./graph-nodes.service";
 import { ActivatedRoute, Router } from "@angular/router";
 import { GraphNode } from "./graph-node.model";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
+import { forbiddenNameValidator } from "./form.validator";
 
 @Component({
   selector: "app-graph-node",
@@ -13,6 +14,8 @@ export class GraphNodePage implements OnInit {
   selectedNode: GraphNode;
   childrenNodes: GraphNode[];
   form: FormGroup;
+  forbiddenIds: string[];
+
   constructor(
     private graphNodesService: GraphNodesService,
     private route: ActivatedRoute,
@@ -25,6 +28,9 @@ export class GraphNodePage implements OnInit {
         return;
       }
       this.selectedNode = this.graphNodesService.getNode(paramMap.get("id"));
+      this.forbiddenIds = this.graphNodesService.getAllIds(
+        this.selectedNode.objectId
+      );
 
       // if no page redirecting to the first element in the array
       if (typeof this.selectedNode === "undefined") {
@@ -51,11 +57,14 @@ export class GraphNodePage implements OnInit {
         this.childrenNodes = this.graphNodesService.findChildren(
           paramMap.get("id")
         );
-
+        // creating a form
         this.form = new FormGroup({
           objectId: new FormControl(objectId, {
             updateOn: "blur",
-            validators: [Validators.required]
+            validators: [
+              Validators.required,
+              forbiddenNameValidator(this.forbiddenIds)
+            ]
           }),
           parentObjects: new FormControl(parentObjects, {
             updateOn: "blur",

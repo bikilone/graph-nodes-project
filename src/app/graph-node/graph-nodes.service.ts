@@ -18,6 +18,16 @@ export class GraphNodesService {
     return this.graphNodes;
   }
 
+  getAllIds(currentId: string) {
+    const ids = [];
+    this.graphNodes.forEach(node => {
+      if (node.objectId !== currentId) {
+        ids.push(node.objectId);
+      }
+    });
+    return ids;
+  }
+
   getNode(id: string) {
     return this.graphNodes.filter(node => node.objectId === id)[0];
   }
@@ -48,7 +58,7 @@ export class GraphNodesService {
     data: { objectId: string; userId: string; roles: string[]; groupId: string }
   ) {
     const { objectId, userId, roles, groupId } = data;
-    // find all children
+    // find all children and keeping the connection between parent and child
     this.findChildren(id).forEach(node => {
       node.parentObjects[0] = objectId;
     });
@@ -58,6 +68,5 @@ export class GraphNodesService {
     node.explicitRolesAssignment[0].userId = userId;
     node.explicitRolesAssignment[0].groupId = groupId;
     node.explicitRolesAssignment[0].roles = roles;
-    console.log(this.getAllNodes());
   }
 }
