@@ -1,5 +1,7 @@
 {
   "name": "graph-nodes-project",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular"
 }

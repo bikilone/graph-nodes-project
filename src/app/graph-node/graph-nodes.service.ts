@@ -48,11 +48,16 @@ export class GraphNodesService {
     data: { objectId: string; userId: string; roles: string[]; groupId: string }
   ) {
     const { objectId, userId, roles, groupId } = data;
+    // find all children
+    this.findChildren(id).forEach(node => {
+      node.parentObjects[0] = objectId;
+    });
 
     const node = this.getNode(id);
     node.objectId = objectId;
     node.explicitRolesAssignment[0].userId = userId;
     node.explicitRolesAssignment[0].groupId = groupId;
     node.explicitRolesAssignment[0].roles = roles;
+    console.log(this.getAllNodes());
   }
 }
